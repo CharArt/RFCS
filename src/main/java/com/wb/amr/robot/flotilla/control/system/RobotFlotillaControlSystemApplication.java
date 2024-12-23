@@ -11,12 +11,15 @@ public class RobotFlotillaControlSystemApplication {
     public static void main(String[] args) throws MqttException, InterruptedException {
         Dotenv dotenv = Dotenv.load();
         SpringApplication.run(RobotFlotillaControlSystemApplication.class, args);
+
 /*
         MQTTConfig config = new MQTTConfig();
-        MqttClient client = config.getClient();
+        MqttClient client = new MqttClient("tcp://127.0.0.1:1883", "publisher");
         MqttConnectionOptions options = config.getOptions();
-        client.setCallback(new MQTTCallbackHandler(client, options));
-        client.connect(options);
+        ConnectionContext context = new ConnectionContext(client, options);
+        context.connect();
+
+
 
         String topic = "topic/test";
         int subQos = 1;
@@ -30,6 +33,7 @@ public class RobotFlotillaControlSystemApplication {
             System.out.println("connection: " + client.isConnected());
             client.publish(topic, mqttMessage.getPayload(), pubQos, false);
             Thread.sleep(1000);
+
         }
 
         client.disconnect();

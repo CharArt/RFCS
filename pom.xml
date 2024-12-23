@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.0</version>
+        <version>3.4.1</version>
         <relativePath/>
     </parent>
 
@@ -21,21 +21,37 @@
     <properties>
         <java.version>21</java.version>
         <springframework.boot.web.version>3.4.0</springframework.boot.web.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <paho.mqtt5.version>1.2.5</paho.mqtt5.version>
         <cdimascio.version>2.2.0</cdimascio.version>
         <paulschwarz.version>3.0.0</paulschwarz.version>
+        <com.fasterxml.jackson.core.version>2.15.0</com.fasterxml.jackson.core.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <version>3.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <version>3.4.1</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
             <version>${lombok.version}</version>
         </dependency>
@@ -58,6 +74,12 @@
             <version>${paulschwarz.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${com.fasterxml.jackson.core.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -65,26 +87,24 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
                 <configuration>
+                    <source>21</source>
+                    <target>21</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
+                <version>3.4.0</version>
             </plugin>
         </plugins>
     </build>

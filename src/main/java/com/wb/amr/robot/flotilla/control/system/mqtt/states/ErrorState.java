@@ -1,10 +1,10 @@
 package com.wb.amr.robot.flotilla.control.system.mqtt.states;
 
-public class ErrorState implements ConnectionState {
+public class ErrorState implements MqttClientState {
 
-    private final ConnectionContext context;
+    private final MqttConnectionContext context;
 
-    public ErrorState(ConnectionContext context) {
+    public ErrorState(MqttConnectionContext context) {
         this.context = context;
     }
 
@@ -14,23 +14,22 @@ public class ErrorState implements ConnectionState {
     }
 
     @Override
-    public void connected() {
+    public void connected(String topic) {
 
     }
 
     @Override
-    public void reconnecting(int attempts) {
-        context.setState(context.getReconnectingState());
-        context.getCurrentState().reconnecting(attempts);
-    }
-
-    @Override
-    public void failed() {
+    public void reconnecting(String topic) {
 
     }
 
     @Override
-    public void publishing(String topic, byte[] payload, int qos, boolean retaine) {
+    public void publishing(String message, Integer qos) {
+
+    }
+
+    @Override
+    public void subscribe(String topic, Integer qos) {
 
     }
 }

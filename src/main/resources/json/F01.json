@@ -1,0 +1,24 @@
+{
+  "reqCode": "autodostavka20250224112536871395",
+  "reqTime": "",
+  "clientCode": "",
+  "tokenCode": "",
+  "taskTyp": "F01",
+  "ctnrTyp": "",
+  "ctnrCode": "",
+  "taskMode": "",
+  "wbCode": "",
+  "podCode":"148021",
+  "podTyp":"01",
+  "positionCodePath":
+  [
+    {
+      "positionCode": "373330CC135005",
+      "type":"00"
+    },
+    {
+      "positionCode":"H148021",
+      "type":"00"
+    }
+  ]
+}

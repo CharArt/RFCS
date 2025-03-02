@@ -1,10 +1,10 @@
 package com.wb.amr.robot.flotilla.control.system.mqtt.states;
 
-public class FailedState implements ConnectionState {
+public class FailedState implements MqttClientState {
 
-    private final ConnectionContext context;
+    private final MqttConnectionContext context;
 
-    public FailedState(ConnectionContext context) {
+    public FailedState(MqttConnectionContext context) {
         this.context = context;
     }
 
@@ -14,21 +14,21 @@ public class FailedState implements ConnectionState {
     }
 
     @Override
-    public void connected() {
+    public void connected(String topic) {
 
     }
 
     @Override
-    public void reconnecting(int attempts) {
+    public void reconnecting(String topic) {
 
     }
 
     @Override
-    public void failed() {
-        System.out.println("We could connect to broker to URL:" + context.getClient().getServerURI());
+    public void publishing(String message, Integer qos) {
     }
 
     @Override
-    public void publishing(String topic, byte[] payload, int qos, boolean retaine) {
+    public void subscribe(String topic, Integer qos) {
+
     }
 }

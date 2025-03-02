@@ -1,0 +1,97 @@
+{
+  "headerId": 154829630012,
+  "orderId": "154829630012",
+  "timestamp": "2024-11-28T05:25:58.933Z",
+  "version": "2.0.0",
+  "manufacturer": "kuka",
+  "serialNumber": "1582933",
+  "orderUpdateId": 0,
+  "nodes": [
+    {
+      "nodeId": "115000DD126250",
+      "sequenceId": 0,
+      "released": true,
+      "nodePosition": {
+        "x": 115.0,
+        "y": 126.25,
+        "allowedDeviationXY": 0.05,
+        "allowedDeviationTheta": 0.07,
+        "theta": 0.0,
+        "mapId": "floor_K9F4S1_sec1_pxi_updateEdgeLabel"
+      },
+      "actions": [
+        {
+          "actionType": "pick",
+          "actionId": "d9dc3ab8-07db-4fc2-a3a8-df5826a5f0aa6",
+          "blockingType": "HARD",
+          "actionParameters": [
+            {
+              "key": "loadType",
+              "value": "NOQRCODE"
+            },
+            {
+              "key": "loadName",
+              "value": "RackPoligon"
+            }
+          ]
+        },
+        {
+          "actionType": "rotateLoad",
+          "actionId": "d9dc3ab8-07db-4fc2-a3a8-df5826a5f0ab6",
+          "blockingType": "HARD",
+          "actionParameters": [
+            {
+              "key": "rotationType",
+              "value": "ABSOLUTE"
+            },
+            {
+              "key": "angle",
+              "value": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "nodeId": "113760DD126250",
+      "sequenceId": 2,
+      "released": true,
+      "nodePosition": {
+        "x": 113.76,
+        "y": 126.25,
+        "allowedDeviationXY": 0.05,
+        "allowedDeviationTheta": 0.07,
+        "theta": 0.0,
+        "mapId": "floor_K9F4S1_sec1_pxi_updateEdgeLabel"
+      },
+      "actions": [
+        {
+          "actionType": "drop",
+          "actionId": "d9dc3ab8-07db-4fc2-a3a8-df5826a5f0ac6",
+          "blockingType": "HARD",
+          "actionParameters": [
+            {
+              "key": "loadType",
+              "value": "NOQRCODE"
+            },
+            {
+              "key": "loadName",
+              "value": "RackPoligon"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "edgeId": "e20",
+      "sequenceId": 1,
+      "released": true,
+      "startNodeId": "115000DD126250",
+      "endNodeId": "113760DD126250",
+      "maxSpeed": 1.0,
+      "actions": []
+    }
+  ]
+}

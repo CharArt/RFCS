@@ -1,0 +1,66 @@
+{
+  "headerId": 1450,
+  "timestamp": "2024-10-27T13:04:10.159Z",
+  "version": "2.0.0",
+  "manufacturer": "kuka",
+  "serialNumber": "1582933",
+  "orderId": "154829630018",
+  "orderUpdateId": 0,
+  "lastNodeId": "104240DD141090",
+  "lastNodeSequenceId": 0,
+  "nodeStates": [],
+  "edgeStates": [],
+  "agvPosition": {
+    "x": 104.237,
+    "y": 141.119,
+    "theta": -0.006544984694978736,
+    "mapId": "floor_K9F4S1_sec1_pxi_updateEdgeLabel",
+    "positionInitialized": true
+  },
+  "velocity": {
+    "vx": 0.0,
+    "vy": 0.0,
+    "omega": 0.0
+  },
+  "loads": [],
+  "driving": false,
+  "paused": false,
+  "actionStates": [
+    {
+      "actionId": "d9dc3ab8-07db-4fc2-a3a8-df5826a5f0ab62",
+      "actionType": "rotateLoad",
+      "actionStatus": "FINISHED"
+    },
+    {
+      "actionId": "a7050a08-8ffc-407e-a274-c6fd388afea4",
+      "actionType": "cancelOrder",
+      "actionStatus": "FINISHED"
+    }
+  ],
+  "batteryState": {
+    "batteryCharge": 40.0,
+    "charging": false
+  },
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "information": [
+    {
+      "infoType": "AGV runtime information",
+      "infoLevel": "INFO",
+      "infoReferences": [
+        {
+          "referenceKey": "ip",
+          "referenceValue": "11.4.252.122"
+        },
+        {
+          "referenceKey": "agvModelName",
+          "referenceValue": "KMP600I"
+        }
+      ]
+    }
+  ],
+  "safetyState": {
+    "eStop": "MANUAL",
+    "fieldViolation": false
+  }
+}

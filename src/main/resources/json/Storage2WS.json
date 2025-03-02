@@ -1,0 +1,24 @@
+{
+  "reqCode": "0001",
+  "reqTime": "",
+  "clientCode": "",
+  "tokenCode": "",
+  "taskTyp": "Storage2WS",
+  "ctnrTyp": "",
+  "ctnrCode": "",
+  "taskMode": "",
+  "wbCode": "",
+  "podCode":"100100",
+  "podTyp":"01",
+  "positionCodePath":
+  [
+    {
+      "positionCode": "H100100",
+      "type":"00"
+    },
+    {
+      "positionCode":"WS35",
+      "type":"00"
+    }
+  ]
+}

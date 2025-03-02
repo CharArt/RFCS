@@ -1,14 +1,19 @@
 package com.wb.amr.robot.flotilla.control.system.mqtt.states;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.client.MqttConnectionOptions;
 import org.eclipse.paho.mqttv5.common.MqttException;
 
-public class DisconnectedState implements ConnectionState {
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-    private final ConnectionContext context;
+public class DisconnectedState implements MqttClientState {
+    private static final Logger LOGGER = LogManager.getLogger(DisconnectedState.class.getName());
+    private final MqttConnectionContext context;
 
-    public DisconnectedState(ConnectionContext context) {
+    public DisconnectedState(MqttConnectionContext context) {
         this.context = context;
     }
 
@@ -17,41 +22,40 @@ public class DisconnectedState implements ConnectionState {
     }
 
     @Override
-    public void connected() {
+    public void connected(String topic) {
+        context.setTopic(topic);
         MqttClient client = context.getClient();
         MqttConnectionOptions options = context.getOptions();
-        try {
-            if (!client.isConnected()) {
+        CountDownLatch latch = new CountDownLatch(1);
+        client.setCallback(new CallbackHandler(context, latch));
+
+        if (topic != null && !topic.isEmpty()) {
+            try {
+                LOGGER.info("{} try to connect", client.getClientId());
                 client.connect(options);
-                if (client.isConnected()) {
-                    client.setCallback(new CallbackHandler(this.context));
-                    context.setState(context.getConnectedState());
-                    context.getCurrentState().connected();
-                } else {
-                    context.setState(context.getReconnectingState());
-                    context.getCurrentState().reconnecting(3);
+                if(!latch.await(1, TimeUnit.MILLISECONDS)){
+                    throw new MqttException(new Throwable("Connection timeout"));
                 }
-            } else {
-                System.out.println("Connection had connected already");
+            } catch (MqttException | InterruptedException e) {
+                LOGGER.error(e);
+                context.setState(context.getReconnectingState());
+                context.reconnect(context.getTopic());
             }
-        } catch (MqttException mqttException) {
-            System.out.println(mqttException.getMessage());
-            context.setState(context.getErrorState());
-            context.getCurrentState().reconnecting(3);
+        } else {
+            LOGGER.error("Topic can't be empty or null");
+            throw new IllegalArgumentException("Topic can't be empty or null");
         }
     }
 
     @Override
-    public void reconnecting(int attempts) {
+    public void reconnecting(String topic) {
     }
 
     @Override
-    public void failed() {
-
+    public void publishing(String message, Integer qos) {
     }
 
     @Override
-    public void publishing(String topic, byte[] payload, int qos, boolean retaine) {
-
+    public void subscribe(String topic, Integer qos) {
     }
 }

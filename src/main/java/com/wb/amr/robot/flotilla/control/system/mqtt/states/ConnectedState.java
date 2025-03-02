@@ -1,13 +1,16 @@
 package com.wb.amr.robot.flotilla.control.system.mqtt.states;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.common.MqttException;
+import org.eclipse.paho.mqttv5.common.MqttMessage;
 
-public class ConnectedState implements ConnectionState {
+public class ConnectedState implements MqttClientState {
+    private static final Logger LOGGER = LogManager.getLogger(ConnectedState.class.getName());
+    private final MqttConnectionContext context;
 
-    private final ConnectionContext context;
-
-    public ConnectedState(ConnectionContext context) {
+    public ConnectedState(MqttConnectionContext context) {
         this.context = context;
     }
 
@@ -19,31 +22,47 @@ public class ConnectedState implements ConnectionState {
                 client.disconnect();
                 client.close();
             } else {
-                System.out.println("Connection had disconnected already");
+                LOGGER.warn("{} Connection had disconnected already", client.getClientId());
             }
         } catch (MqttException mqttException) {
-            System.out.println(mqttException.getMessage());
+            context.setState(context.getErrorState());
+            LOGGER.error("{} exception: {}", client.getClientId(), mqttException);
+        }
+    }
+
+    @Override
+    public void connected(String topic) {
+
+    }
+
+    @Override
+    public void reconnecting(String topic) {
+
+    }
+
+
+    @Override
+    public void publishing(String message, Integer qos) {
+        System.out.println("connected state");
+        MqttClient client = context.getClient();
+        MqttMessage mqttMessage = new MqttMessage(message.getBytes());
+        mqttMessage.setQos(qos);
+        try {
+            client.publish(context.getTopic(), mqttMessage);
+        } catch (MqttException e) {
+            LOGGER.error("{} attempt to publish failed, in reason: {} ", client.getClientId(), e.getMessage());
             context.setState(context.getErrorState());
         }
     }
 
     @Override
-    public void connected() {
-        System.out.println("We ready to send messages");
-        context.setState(context.getPublishingState());
-    }
-
-    @Override
-    public void reconnecting(int attempts) {
-
-    }
-
-    @Override
-    public void failed() {
-
-    }
-
-    @Override
-    public void publishing(String topic, byte[] payload, int qos, boolean retain) {
+    public void subscribe(String topic, Integer qos) {
+        MqttClient client = context.getClient();
+        try {
+            client.subscribe(topic, qos);
+        } catch (MqttException e) {
+            LOGGER.error("{} get exception on subscribe {} ", client.getClientId(), e.getMessage());
+            context.setState(context.getErrorState());
+        }
     }
 }

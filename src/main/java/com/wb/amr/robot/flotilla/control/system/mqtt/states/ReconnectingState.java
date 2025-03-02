@@ -1,12 +1,15 @@
 package com.wb.amr.robot.flotilla.control.system.mqtt.states;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.eclipse.paho.mqttv5.client.MqttClient;
 import org.eclipse.paho.mqttv5.common.MqttException;
 
-public class ReconnectingState implements ConnectionState {
+public class ReconnectingState implements MqttClientState, Runnable {
+    private final static Logger LOGGER = LogManager.getLogger(ReconnectingState.class.getName());
+    private final MqttConnectionContext context;
 
-    private final ConnectionContext context;
-
-    public ReconnectingState(ConnectionContext context) {
+    public ReconnectingState(MqttConnectionContext context) {
         this.context = context;
     }
 
@@ -16,40 +19,48 @@ public class ReconnectingState implements ConnectionState {
     }
 
     @Override
-    public void connected() {
+    public void connected(String topic) {
 
     }
 
     @Override
-    public void reconnecting(int attempts) {
+    public void reconnecting(String topic) {
+        System.out.println("reconnected state");
+        Thread thread = new Thread(this);
+        thread.start();
+    }
+
+    @Override
+    public void publishing(String message, Integer qos) {
+
+    }
+
+    @Override
+    public void subscribe(String topic, Integer qos) {
+
+    }
+
+    @Override
+    public void run() {
+        context.setIsReconnected(true);
         int counter = 0;
-        while (context.getClient().isConnected() || counter < attempts) {
+        int attempts = context.getReconnectionAttempts();
+        MqttClient client = context.getClient();
+        while (counter < attempts) {
             try {
-                context.getClient().reconnect();
-                if (context.getClient().isConnected()) {
-                    context.setState(context.getConnectedState());
+                LOGGER.info("Attempt connection {} of {}", counter + 1, client.getClientId());
+                if (!client.isConnected()) {
+                    client.reconnect();
                 } else {
-                    System.out.println("Failed reconnection attempt, attempt:" + counter);
-                    counter++;
+                    break;
                 }
-            } catch (MqttException mqttException) {
-                System.out.println(mqttException.getMessage());
+                ++counter;
+                Thread.sleep(6000L);
+            } catch (MqttException | InterruptedException ex) {
+                LOGGER.error("{} get exception {} while try reconnected with reason: {}",
+                        client.getClientId(), ex, ex.getMessage());
                 context.setState(context.getErrorState());
             }
         }
-        if(!context.getClient().isConnected()){
-            context.setState(context.getFailedState());
-            context.getCurrentState().failed();
-        }
-    }
-
-    @Override
-    public void failed() {
-
-    }
-
-    @Override
-    public void publishing(String topic, byte[] payload, int qos, boolean retaine) {
-
     }
 }

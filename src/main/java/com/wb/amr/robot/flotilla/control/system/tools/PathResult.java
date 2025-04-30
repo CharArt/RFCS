@@ -21,18 +21,17 @@ public class PathResult {
 
     private Map<Integer, Object> addHolePath(List<Node> nodes, List<Edge> edges) {
         Map<Integer, Object> p = new HashMap<>();
-        for (int i = 0; i < nodes.size(); i++) {
-            if (i == 0) {
-                p.put(i, nodes.get(i));
-            } else if (i % 2 == 0) {
-                p.put(i, nodes.get(i));
-            } else {
-                p.put(i, edges.get(i - 1));
+        int nodeIndex = 0, edgeIndex = 0, index = 0;
+        while (nodeIndex < nodes.size() || edgeIndex < edges.size()) {
+            if(nodeIndex < nodes.size()){
+                p.put(index++, nodes.get(nodeIndex++));
+            }
+            if(edgeIndex < edges.size()){
+                p.put(index++, edges.get(edgeIndex++));
             }
         }
         return p;
     }
-
 
     @Override
     public int hashCode() {
@@ -53,6 +52,20 @@ public class PathResult {
 
     @Override
     public String toString() {
-        return super.toString();
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<Integer, Object> entry: path.entrySet()) {
+            if(entry.getValue() instanceof Node){
+                Node node = (Node)entry.getValue();
+                builder.append(entry.getKey().toString() + ":");
+                builder.append(node.getName() + ", ");
+                builder.append("\n");
+            }else if (entry.getValue() instanceof Edge){
+                Edge edge = (Edge)entry.getValue();
+                builder.append(entry.getKey().toString() + ":");
+                builder.append(edge.getId() + ", ");
+                builder.append("\n");
+            }
+        }
+        return builder.toString();
     }
 }

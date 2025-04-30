@@ -36,7 +36,7 @@ public class Edge implements Comparable<Edge> {
 
     @Override
     public String toString() {
-        StringJoiner joiner = new StringJoiner("{", "}", ",");
+        StringJoiner joiner = new StringJoiner(",", "{", "}");
         joiner.add(id);
         joiner.add(length.toString());
         return joiner.toString();

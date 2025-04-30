@@ -21,7 +21,6 @@ public class InfoReference extends BasicEntity {
     @JsonProperty("referenceValue")
     private Object referenceValue;
 
-
     public void setValue(String key, Object value) {
         super.checkSetValue(this, key, value);
     }
@@ -32,7 +31,7 @@ public class InfoReference extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.toString());
             throw new IllegalArgumentException("Empty InfoReference");
         }
     }

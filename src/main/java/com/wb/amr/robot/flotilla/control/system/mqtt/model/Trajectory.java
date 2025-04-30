@@ -37,7 +37,7 @@ public class Trajectory extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
             throw new IllegalArgumentException("Empty Trajectory");
         }
     }

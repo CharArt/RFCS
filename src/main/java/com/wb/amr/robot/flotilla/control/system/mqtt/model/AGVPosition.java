@@ -46,7 +46,7 @@ public class AGVPosition extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.toString());
             throw new IllegalArgumentException("Empty AGVPosition");
         }
     }

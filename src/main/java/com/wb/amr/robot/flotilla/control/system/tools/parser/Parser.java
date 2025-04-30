@@ -41,8 +41,7 @@ public class Parser {
         List<Actions> actionsList = new ArrayList<>();
         if (actionsObject instanceof ArrayList<?>) {
             ArrayList<LinkedHashMap<String, Object>> rawActions = new ObjectMapper()
-                    .convertValue(actionsObject, new TypeReference<>() {
-                    });
+                    .convertValue(actionsObject, new TypeReference<>() {});
             for (LinkedHashMap<String, Object> info : rawActions) {
                 List<ActionParameter> actionParameterList = getActionParameters(info.remove("actionParameters"));
                 Actions action = new Actions();

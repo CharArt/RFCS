@@ -38,9 +38,9 @@ public class AStarSearch {
                         queueForTreatment.add(neighborNode);
                     }
                 }
-            }
+            }   
         }
-        return new PathResult(new ArrayList<Node>(), new ArrayList<Edge>());
+        return new PathResult(Collections.emptyList(), Collections.emptyList());
     }
 
     private double euclideanHeuristic(Node n, Node target) {
@@ -52,12 +52,11 @@ public class AStarSearch {
         List<Edge> edges = new ArrayList<>();
         while (current != null) {
             nodes.add(current);
-            edges.add(edgeFrom.get(current));
+            Optional.ofNullable(edgeFrom.get(current)).ifPresent(edges::add);
             current = nodeFrom.get(current);
         }
         Collections.reverse(nodes);
         Collections.reverse(edges);
-
         return new PathResult(nodes, edges);
     }
 }

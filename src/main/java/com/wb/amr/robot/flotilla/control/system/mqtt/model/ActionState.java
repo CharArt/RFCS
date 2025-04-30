@@ -22,7 +22,7 @@ public class ActionState extends BasicEntity {
     private String actionType = "";
 
     @JsonProperty("actionStatus")
-    private String actionStatus = ""; // Enum ActionStatus
+    private String actionStatus = "";
 
     @JsonProperty("resultDescription")
     private String resultDescription = "";
@@ -37,7 +37,7 @@ public class ActionState extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
             throw new IllegalArgumentException("Empty ActionState");
         }
     }

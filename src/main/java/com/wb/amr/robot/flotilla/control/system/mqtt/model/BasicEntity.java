@@ -28,7 +28,7 @@ public abstract class BasicEntity {
             field.setAccessible(true);
             field.set(link, value);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
         }
     }
 }

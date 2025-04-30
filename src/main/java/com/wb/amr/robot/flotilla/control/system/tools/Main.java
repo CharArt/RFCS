@@ -1,5 +1,7 @@
 package com.wb.amr.robot.flotilla.control.system.tools;
 
+import java.util.Map;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -28,7 +30,7 @@ public class Main {
 
 
         AStarSearch aStart = new AStarSearch();
-        PathResult pathResult = aStart.findPath(A, E);
-
+        PathResult pathResult = aStart.findPath(A, E); 
+        System.out.println(pathResult.toString());
     }
 }

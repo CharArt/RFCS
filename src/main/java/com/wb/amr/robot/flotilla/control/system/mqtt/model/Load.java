@@ -9,9 +9,6 @@ import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-
-import java.util.StringJoiner;
-
 @Data
 @JsonInclude
 @EqualsAndHashCode(callSuper = false)
@@ -40,7 +37,7 @@ public class Load extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage());
             throw new IllegalArgumentException("Empty Load");
         }
     }

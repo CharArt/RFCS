@@ -33,7 +33,9 @@ public class Error extends BasicEntity {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("Empty Error");
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Empty error in toString(), error");
+            throw new IllegalArgumentException("Empty error");
         }
     }
 }

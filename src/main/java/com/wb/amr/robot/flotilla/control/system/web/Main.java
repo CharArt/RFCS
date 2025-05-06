@@ -18,22 +18,5 @@ public class Main {
 
         context.disconnect();
 
-
-//        Parser parser = new Parser();
-//        try {
-//            ObjectMapper mapper = new ObjectMapper();
-//            InputStream rawOrder = new ClassPathResource("json/OrderExample.json").getInputStream();
-//            InputStream rawStatus = new ClassPathResource("json/StatusExample.json").getInputStream();
-//            Order order = parser.getOrder(rawOrder);
-//            System.out.println(order.toString());
-//            Order order1 = mapper.readValue(rawOrder, Order.class);
-//            System.out.println(order1.toString());
-//            Status status = parser.getStatus(rawStatus);
-//            System.out.println(status1.toString());
-//            Status status1 = mapper.readValue(rawStatus, Status.class);
-//            System.out.println(status1.toString());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
     }
 }

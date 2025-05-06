@@ -23,7 +23,7 @@
             <AppenderRef ref="File"/>
         </Root>
 
-        <Logger name="com.wb.amr.robot.flotilla.control.system.mqtt.model.BasicEntity" level="debug" additivity="false">
+        <Logger name="com.wb.amr.robot.flotilla.control.system.map.json.BasicEntity" level="debug" additivity="false">
             <AppenderRef ref="Console"/>
             <AppenderRef ref="File"/>
         </Logger>

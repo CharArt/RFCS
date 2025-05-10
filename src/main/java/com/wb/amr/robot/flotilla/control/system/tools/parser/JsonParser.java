@@ -2,8 +2,8 @@ package com.wb.amr.robot.flotilla.control.system.tools.parser;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wb.amr.robot.flotilla.control.system.map.json.*;
-import com.wb.amr.robot.flotilla.control.system.map.json.Error;
+import com.wb.amr.robot.flotilla.control.system.map.json.vda.*;
+import com.wb.amr.robot.flotilla.control.system.map.json.vda.Error;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;

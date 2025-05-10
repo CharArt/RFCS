@@ -1,4 +1,4 @@
-package com.wb.amr.robot.flotilla.control.system.map.json;
+package com.wb.amr.robot.flotilla.control.system.map.json.vda;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

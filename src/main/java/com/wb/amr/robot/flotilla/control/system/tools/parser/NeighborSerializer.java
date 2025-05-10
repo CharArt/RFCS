@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class NeighborSerializer extends StdSerializer<List<Neighbor>> {
     private static final Logger LOGGER = LogManager.getLogger(NeighborSerializer.class.getName());
@@ -19,54 +20,55 @@ public class NeighborSerializer extends StdSerializer<List<Neighbor>> {
     }
 
     @Override
-    public void serialize(List<Neighbor> neighborList,
-                          JsonGenerator jsonGenerator,
-                          SerializerProvider serializerProvider) {
+    public void serialize(List<Neighbor> neighborList, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) {
         try {
             ToXmlGenerator xmlGenerator = (ToXmlGenerator) jsonGenerator;
-//            xmlGenerator.writeStartObject();
-//            xmlGenerator.writeRaw("<NeighbInfo>");
+            xmlGenerator.writeRaw("\n");
             for (Neighbor neighbor : neighborList) {
-                xmlGenerator.writeRaw("\n<id>");
-                xmlGenerator.writeRaw(neighbor.getId().toString());
-                xmlGenerator.writeRaw("</id>\n");
-                xmlGenerator.writeRaw("<distance>");
-                xmlGenerator.writeRaw(String.valueOf(neighbor.getDistance()));
-                xmlGenerator.writeRaw("</distance>\n");
-//                xmlGenerator.writeNumberField("id", neighbor.getId());
-//                xmlGenerator.writeNumberField("distance", neighbor.getDistance());
-//                xmlGenerator.writeNumberField("Rever", neighbor.getRever());
-//                xmlGenerator.writeNumberField("EmptyCantRun", neighbor.getEmptyCantRun());
-//                xmlGenerator.writeNumberField("Speed", neighbor.getSpeed());
-//                xmlGenerator.writeStringField("Ultrasonic", neighbor.getUltrasonic());
-//                xmlGenerator.writeNumberField("LeftWidth", neighbor.getLeftWidth());
-//                xmlGenerator.writeNumberField("RightWidth", neighbor.getRightWidth());
-//                xmlGenerator.writeNumberField("RoadLeftWidth", neighbor.getRoadLeftWidth());
-//                xmlGenerator.writeNumberField("RoadRightWidth", neighbor.getRoadRightWidth());
-//                xmlGenerator.writeStringField("robottype", neighbor.getRobottype());
-//                xmlGenerator.writeNumberField("PodDir", neighbor.getPodDir());
-//                xmlGenerator.writeStringField("AlarmVoice", neighbor.getAlarmVoice());
-//                xmlGenerator.writeNumberField("PreForkLift", neighbor.getPreForkLift());
-//                xmlGenerator.writeNumberField("PreForkLiftLoad", neighbor.getPreForkLiftLoad());
-//                xmlGenerator.writeNumberField("AutoBackRoad", neighbor.getAutoBackRoad());
-//                xmlGenerator.writeNumberField("LaserType", neighbor.getLaserType());
-//                xmlGenerator.writeNumberField("PodLaserType", neighbor.getPodLaserType());
-//                xmlGenerator.writeNumberField("SensorSwitch", neighbor.getSensorSwitch());
-//                xmlGenerator.writeStringField("carryType", neighbor.getCarryType());
-//                xmlGenerator.writeStringField("ctnrtype", neighbor.getCtnrtype());
-//                xmlGenerator.writeNumberField("isLine", neighbor.getIsLine());
-//                xmlGenerator.writeNumberField("RotFreeRun", neighbor.getRotFreeRun());
-//                xmlGenerator.writeStringField("ActLimitHight", neighbor.getActLimitHight());
-//                xmlGenerator.writeStringField("EntryDir", neighbor.getEntryDir());
-//                xmlGenerator.writeNumberField("VirtualLine", neighbor.getVirtualLine());
-//                xmlGenerator.writeNumberField("CtrlPoint", neighbor.getCtrlPoint());
+                writeTag(xmlGenerator, "id", neighbor.getId());
+                writeTag(xmlGenerator, "distance", neighbor.getDistance());
+                writeTag(xmlGenerator, "Rever", neighbor.getDistance());
+                writeTag(xmlGenerator, "EmptyCantRun", neighbor.getEmptyCantRun());
+                writeTag(xmlGenerator, "Speed", neighbor.getSpeed());
+                writeTag(xmlGenerator, "Ultrasonic", neighbor.getUltrasonic());
+                writeTag(xmlGenerator, "LeftWidth", neighbor.getLeftWidth());
+                writeTag(xmlGenerator, "RightWidth", neighbor.getRightWidth());
+                writeTag(xmlGenerator, "RoadLeftWidth", neighbor.getRoadLeftWidth());
+                writeTag(xmlGenerator, "RoadRightWidth", neighbor.getRoadRightWidth());
+                writeTag(xmlGenerator, "robottype", neighbor.getRobottype());
+                writeTag(xmlGenerator, "PodDir", neighbor.getPodDir());
+                writeTag(xmlGenerator, "AlarmVoice", neighbor.getAlarmVoice());
+                writeTag(xmlGenerator, "PreForkLift", neighbor.getPreForkLift());
+                writeTag(xmlGenerator, "PreForkLiftLoad", neighbor.getPreForkLiftLoad());
+                writeTag(xmlGenerator, "AutoBackRoad", neighbor.getAutoBackRoad());
+                writeTag(xmlGenerator, "LaserType", neighbor.getLaserType());
+                writeTag(xmlGenerator, "PodLaserType", neighbor.getPodLaserType());
+                writeTag(xmlGenerator, "SensorSwitch", neighbor.getSensorSwitch());
+                writeTag(xmlGenerator, "carryType", neighbor.getCarryType());
+                writeTag(xmlGenerator, "ctnrtype", neighbor.getCtnrtype());
+                writeTag(xmlGenerator, "isLine", neighbor.getIsLine());
+                writeTag(xmlGenerator, "RotFreeRun", neighbor.getRotFreeRun());
+                writeTag(xmlGenerator, "ActLimitHight", neighbor.getActLimitHight());
+                writeTag(xmlGenerator, "EntryDir", neighbor.getEntryDir());
+                writeTag(xmlGenerator, "VirtualLine", neighbor.getVirtualLine());
+                writeTag(xmlGenerator, "CtrlPoint", neighbor.getCtrlPoint());
             }
-//            xmlGenerator.writeRaw("<NeighbInfo>");
-//            xmlGenerator.writeEndObject();
         } catch (IOException exception) {
             LOGGER.error(exception.getMessage());
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
+        }
+    }
+
+    private void writeTag(ToXmlGenerator xmlGenerator, String tagName, Object value) {
+        try {
+            if (value != null) {
+                xmlGenerator.writeRaw("\t<" + tagName + ">");
+                xmlGenerator.writeRaw(Objects.toString(value));
+                xmlGenerator.writeRaw("</" + tagName + ">\n");
+            } else {
+                xmlGenerator.writeRaw("\t</" + tagName + ">\n");
+            }
+        } catch (IOException exception) {
+            LOGGER.error("Couldn't write XML tag <{}>", tagName, exception);
         }
     }
 }

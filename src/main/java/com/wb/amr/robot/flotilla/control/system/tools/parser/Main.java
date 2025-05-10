@@ -1,6 +1,5 @@
 package com.wb.amr.robot.flotilla.control.system.tools.parser;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -8,8 +7,6 @@ import com.wb.amr.robot.flotilla.control.system.map.xml.MapCfg;
 import org.springframework.core.io.ClassPathResource;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-
-import javax.swing.text.html.parser.Parser;
 
 public class Main {
     public static void main(String[] args) {
@@ -23,7 +20,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
-
 
 //        JsonParser parser = new JsonParser();
 //        try {

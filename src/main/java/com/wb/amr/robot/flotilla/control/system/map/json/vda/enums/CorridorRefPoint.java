@@ -1,4 +1,4 @@
-package com.wb.amr.robot.flotilla.control.system.map.json.enums;
+package com.wb.amr.robot.flotilla.control.system.map.json.vda.enums;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

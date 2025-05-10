@@ -1,10 +1,10 @@
-package com.wb.amr.robot.flotilla.control.system.map.json;
+package com.wb.amr.robot.flotilla.control.system.map.json.vda;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wb.amr.robot.flotilla.control.system.map.json.enums.OrientationType;
+import com.wb.amr.robot.flotilla.control.system.map.json.vda.enums.OrientationType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.logging.log4j.LogManager;

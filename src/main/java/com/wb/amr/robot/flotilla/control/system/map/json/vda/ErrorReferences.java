@@ -1,4 +1,4 @@
-package com.wb.amr.robot.flotilla.control.system.map.json;
+package com.wb.amr.robot.flotilla.control.system.map.json.vda;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

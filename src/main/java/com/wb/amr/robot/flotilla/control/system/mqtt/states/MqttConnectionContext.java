@@ -51,11 +51,11 @@ public class MqttConnectionContext {
         this.currentState.connected(topic);
     }
 
-    public void publish(String message, Integer qos) {
+    public void publish(String message, int qos) {
         this.currentState.publishing(message, qos);
     }
 
-    public void subscribe(String topic, Integer qos) {
+    public void subscribe(String topic, int qos) {
         this.currentState.subscribe(topic, qos);
     }
 

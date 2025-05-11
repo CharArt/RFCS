@@ -1,6 +1,5 @@
 package com.wb.amr.robot.flotilla.control.system.config;
 
-import com.wb.amr.robot.flotilla.control.system.mqtt.states.CallbackHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.paho.mqttv5.client.MqttClient;
@@ -12,7 +11,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MQTTConfig {
+
     private static final Logger LOGGER = LogManager.getLogger(MQTTConfig.class.getName());
+
+    private final String BROKER = "tcp://localhost:1883";
+    private final String CLIENT_ID_PUB = "publisher";
+    private final String CLIENT_ID_SUB = "subscriber";
 
     @Bean
     public MqttConnectionOptions getMQTTOptions() {
@@ -21,10 +25,6 @@ public class MQTTConfig {
         options.setKeepAliveInterval(60);
         return options;
     }
-
-    private final String BROKER = "tcp://localhost:1883";
-    private final String CLIENT_ID_PUB = "publisher";
-    private final String CLIENT_ID_SUB = "subscriber";
 
     @Bean
     public MqttClient getMQTTClient() {

@@ -8,7 +8,7 @@ public interface MqttClientState {
 
     void reconnecting(String topic);
 
-    void publishing(String message, Integer qos);
+    void publishing(String message, int qos);
 
-    void subscribe(String topic, Integer qos);
+    void subscribe(String topic, int qos);
 }

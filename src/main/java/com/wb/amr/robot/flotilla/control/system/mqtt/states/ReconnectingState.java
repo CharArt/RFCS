@@ -31,12 +31,12 @@ public class ReconnectingState implements MqttClientState, Runnable {
     }
 
     @Override
-    public void publishing(String message, Integer qos) {
+    public void publishing(String message, int qos) {
 
     }
 
     @Override
-    public void subscribe(String topic, Integer qos) {
+    public void subscribe(String topic, int qos) {
 
     }
 

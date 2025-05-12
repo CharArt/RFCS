@@ -26,7 +26,7 @@ public class MapCfg {
     private static final Logger LOGGER = LogManager.getLogger(MapCfg.class.getName());
 
     @JacksonXmlProperty(localName = "MapName")
-    private String mapName;
+    private String mapName = "defName";
 
     @JacksonXmlProperty(localName = "MapQRCode")
     private String mapQRCode;

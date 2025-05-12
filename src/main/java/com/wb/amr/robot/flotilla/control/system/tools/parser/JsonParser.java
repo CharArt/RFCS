@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wb.amr.robot.flotilla.control.system.map.json.vda.*;
 import com.wb.amr.robot.flotilla.control.system.map.json.vda.Error;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.core.io.ClassPathResource;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonParser {
-    private static final Logger LOGGER = LogManager.getLogger(JsonParser.class.getName());
 
     private @NotNull List<ActionParameter> getActionParameters(Object actionParametersObject) {
         List<ActionParameter> actionParameterList = new ArrayList<>();
@@ -117,23 +116,19 @@ public class JsonParser {
         return edgeList;
     }
 
-    public Order getOrder(InputStream objectOrder) {
+    private Order getOrder(InputStream objectOrder) throws IOException {
         Order order = new Order();
-        try {
-            LinkedHashMap<String, Object> rawOrder = new ObjectMapper().readValue(objectOrder, new TypeReference<>() {
-            });
-            List<Node> nodes = getNode(rawOrder.remove("nodes"));
-            List<Edge> edges = getEdge(rawOrder.remove("edges"));
-            for (Map.Entry<String, Object> entry : rawOrder.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                order.setValue(key, value);
-            }
-            order.setNodes(nodes);
-            order.setEdges(edges);
-        } catch (IOException e) {
-            LOGGER.error(e);
+        LinkedHashMap<String, Object> rawOrder = new ObjectMapper().readValue(objectOrder, new TypeReference<>() {
+        });
+        List<Node> nodes = getNode(rawOrder.remove("nodes"));
+        List<Edge> edges = getEdge(rawOrder.remove("edges"));
+        for (Map.Entry<String, Object> entry : rawOrder.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            order.setValue(key, value);
         }
+        order.setNodes(nodes);
+        order.setEdges(edges);
         return order;
     }
 
@@ -383,40 +378,58 @@ public class JsonParser {
         return errors;
     }
 
-    public Status getStatus(InputStream objectStatus) {
+    private Status getStatus(InputStream objectStatus) throws IOException {
         Status status = new Status();
-        try {
-            LinkedHashMap<String, Object> rawStatus = new ObjectMapper().readValue(objectStatus, new TypeReference<>() {
-            });
 
-            List<NodeState> nodeStates = getNodeSates(rawStatus.remove("nodeStates"));
-            List<EdgeStates> edgeStates = getEdgeStates(rawStatus.remove("edgeStates"));
-            AGVPosition agvPosition = getAGVPostion(rawStatus.remove("agvPosition"));
-            Velocity velocity = getVelocity(rawStatus.remove("velocity"));
-            List<Load> loads = getLoads(rawStatus.remove("loads"));
-            List<ActionState> actionStates = getActionsStates(rawStatus.remove("actionStates"));
-            BatteryState batteryState = getBatteryState(rawStatus.remove("batteryState"));
-            List<Error> errors = getErrors(rawStatus.remove("errors"));
-            List<Information> information = getInformation(rawStatus.remove("information"));
-            SafetyState safetyState = getSafetyState(rawStatus.remove("safetyState"));
-            for (Map.Entry<String, Object> entry : rawStatus.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                status.setValue(key, value);
-            }
-            status.setNodeStates(nodeStates);
-            status.setEdgeStates(edgeStates);
-            status.setAgvPosition(agvPosition);
-            status.setVelocity(velocity);
-            status.setLoads(loads);
-            status.setActionStates(actionStates);
-            status.setBatteryState(batteryState);
-            status.setErrors(errors);
-            status.setInformation(information);
-            status.setSafetyState(safetyState);
-        } catch (IOException e) {
-            LOGGER.error(e);
+        LinkedHashMap<String, Object> rawStatus = new ObjectMapper().readValue(objectStatus, new TypeReference<>() {
+        });
+
+        List<NodeState> nodeStates = getNodeSates(rawStatus.remove("nodeStates"));
+        List<EdgeStates> edgeStates = getEdgeStates(rawStatus.remove("edgeStates"));
+        AGVPosition agvPosition = getAGVPostion(rawStatus.remove("agvPosition"));
+        Velocity velocity = getVelocity(rawStatus.remove("velocity"));
+        List<Load> loads = getLoads(rawStatus.remove("loads"));
+        List<ActionState> actionStates = getActionsStates(rawStatus.remove("actionStates"));
+        BatteryState batteryState = getBatteryState(rawStatus.remove("batteryState"));
+        List<Error> errors = getErrors(rawStatus.remove("errors"));
+        List<Information> information = getInformation(rawStatus.remove("information"));
+        SafetyState safetyState = getSafetyState(rawStatus.remove("safetyState"));
+        for (Map.Entry<String, Object> entry : rawStatus.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            status.setValue(key, value);
         }
+        status.setNodeStates(nodeStates);
+        status.setEdgeStates(edgeStates);
+        status.setAgvPosition(agvPosition);
+        status.setVelocity(velocity);
+        status.setLoads(loads);
+        status.setActionStates(actionStates);
+        status.setBatteryState(batteryState);
+        status.setErrors(errors);
+        status.setInformation(information);
+        status.setSafetyState(safetyState);
+
         return status;
+    }
+
+    public Status getStatusFromString(String string) throws IOException {
+        InputStream rawJson = new ByteArrayInputStream(string.getBytes());
+        return getStatus(rawJson);
+    }
+
+    public Status getStatusFromPath(String path) throws IOException {
+        InputStream rawJson = new ClassPathResource(path).getInputStream();
+        return getStatus(rawJson);
+    }
+
+    public Order getOrderFromString(String string) throws IOException {
+        InputStream rawJson = new ByteArrayInputStream(string.getBytes());
+        return getOrder(rawJson);
+    }
+
+    public Order getOrderFromPath(String path) throws IOException {
+        InputStream rawJson = new ClassPathResource(path).getInputStream();
+        return getOrder(rawJson);
     }
 }

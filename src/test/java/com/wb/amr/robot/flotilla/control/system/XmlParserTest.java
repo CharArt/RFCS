@@ -38,14 +38,14 @@ public class XmlParserTest {
         Executable executableNotValidXml = new Executable() {
             @Override
             public void execute() throws Throwable {
-                MapCfg resultNotValidXml = xmlParser.getMapFromString(invalidXml);
+                xmlParser.getMapFromString(invalidXml);
             }
         };
 
         Executable executableEmptyXml = new Executable() {
             @Override
             public void execute() throws Throwable {
-                MapCfg resultEmptyXml = xmlParser.getMapFromString(emptyXml);
+                xmlParser.getMapFromString(emptyXml);
             }
         };
 
@@ -65,7 +65,7 @@ public class XmlParserTest {
         Executable executable = new Executable() {
             @Override
             public void execute() throws Throwable {
-                MapCfg result = xmlParser.getMapFromPath("no-such-file.xml");
+                xmlParser.getMapFromPath("no-such-file.xml");
             }
         };
         IOException ioException = Assertions.assertThrows(IOException.class, executable);

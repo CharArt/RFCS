@@ -18,7 +18,7 @@ public class Node {
         this.name = name;
     }
 
-    void addNeighbor(Node neighbor, Edge edge) {
+    public void addNeighbor(Node neighbor, Edge edge) {
         neighbors.put(neighbor, edge);
     }
 

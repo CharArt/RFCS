@@ -53,6 +53,7 @@ public class NeighborSerializer extends StdSerializer<List<Neighbor>> {
                 writeTag(xmlGenerator, "VirtualLine", neighbor.getVirtualLine());
                 writeTag(xmlGenerator, "CtrlPoint", neighbor.getCtrlPoint());
             }
+            xmlGenerator.writeRaw("\t");
         } catch (IOException exception) {
             LOGGER.error(exception.getMessage());
         }
@@ -61,11 +62,11 @@ public class NeighborSerializer extends StdSerializer<List<Neighbor>> {
     private void writeTag(ToXmlGenerator xmlGenerator, String tagName, Object value) {
         try {
             if (value != null) {
-                xmlGenerator.writeRaw("\t<" + tagName + ">");
+                xmlGenerator.writeRaw("\t\t<" + tagName + ">");
                 xmlGenerator.writeRaw(Objects.toString(value));
                 xmlGenerator.writeRaw("</" + tagName + ">\n");
             } else {
-                xmlGenerator.writeRaw("\t</" + tagName + ">\n");
+                xmlGenerator.writeRaw("\t\t</" + tagName + ">\n");
             }
         } catch (IOException exception) {
             LOGGER.error("Couldn't write XML tag <{}>", tagName, exception);

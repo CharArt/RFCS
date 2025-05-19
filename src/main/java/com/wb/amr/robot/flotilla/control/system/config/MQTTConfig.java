@@ -9,7 +9,7 @@ import org.eclipse.paho.mqttv5.common.MqttException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+//@Configuration
 public class MQTTConfig {
 
     private static final Logger LOGGER = LogManager.getLogger(MQTTConfig.class.getName());

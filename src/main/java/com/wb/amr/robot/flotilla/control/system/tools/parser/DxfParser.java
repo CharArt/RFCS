@@ -18,180 +18,131 @@ import java.util.*;
 
 public class DxfParser {
 
-    private final static int AXIS_Y_STEP_990 = 990;
-    private final static int AXIS_Y_STEP_1340 = 1340;
-    private final static int AXIS_Y_STEP_1440 = 1440;
-    private final static int AXIS_Y_STEP_1558 = 1558;
-    private final static int AXIS_Y_STEP_1640 = 1640;
-    private final static int AXIS_Y_STEP_1733 = 1733;
-
-    private final static int AXIS_X_STEP_555 = 555;
-    private final static int AXIS_X_STEP_660 = 660;
-    private final static int AXIS_X_STEP_780 = 780;
-    private final static int AXIS_X_STEP_1110 = 1110;
-    private final static int AXIS_X_STEP_1440 = 1440;
-    private final static int AXIS_X_STEP_1560 = 1560;
-
-    private final static String LAYER_WAYS = "точки движения роботов 2";
-    private final static String LAYER_RACKS = "сетка стеллажей";
     private final static String TYPE_OF_POINT_WAY = "way";
     private final static String TYPE_OF_POINT_RACK = "rack";
+    private final static List<Point> FILTER_POINTS = new ArrayList<>(2);
 
+    private final String LAYER_WAYS;
+    private final String LAYER_RACKS;
+    private final Map<Integer, Double> AXIS_X_STEPS;
+    private final Map<Integer, Double> AXIS_Y_STEPS;
+    private final String PATH;
 
-    public static void main(String[] args) throws IOException {
+    public DxfParser(String wayLayer,
+                     String rackLayer,
+                     Map<Integer, Double> x_steps,
+                     Map<Integer, Double> y_steps,
+                     Point fromPoint,
+                     Point toPoint,
+                     String path) {
+        this.LAYER_RACKS = rackLayer;
+        this.LAYER_WAYS = wayLayer;
+        this.AXIS_X_STEPS = x_steps;
+        this.AXIS_Y_STEPS = y_steps;
+        this.PATH = path;
+        FILTER_POINTS.add(fromPoint);
+        FILTER_POINTS.add(toPoint);
+    }
 
-        try (InputStream rawDxf = new ClassPathResource("dxf/R9-5.dxf").getInputStream()) {
+    public List<PointFromDXF> getMap(String nameIndex) throws IOException, IllegalArgumentException {
+        try (InputStream rawDxf = new ClassPathResource(PATH).getInputStream()) {
             Parser parser = ParserBuilder.createDefaultParser();
             parser.parse(rawDxf, "UTF-8");
             DXFDocument dxfDocument = parser.getDocument();
-
             List<DXFLayer> layers = new ArrayList<>(2);
-            Set<PointFromDXF> allPoints = new HashSet<>();
-
-            Iterator<DXFLayer> iterator = (Iterator<DXFLayer>) dxfDocument.getDXFLayerIterator();
-
+            Iterator<?> iterator = dxfDocument.getDXFLayerIterator();
             while (iterator.hasNext() && layers.size() != 2) {
-                DXFLayer layer = (DXFLayer) iterator.next();
-                if (layer.getName().equals(LAYER_RACKS) || layer.getName().equals(LAYER_WAYS)) layers.add(layer);
-            }
-
-            for (DXFLayer layer : layers) {
-                for (Object dxfEntity : layer.getDXFEntities(DXFConstants.ENTITY_TYPE_INSERT)) {
-                    if (dxfEntity != null) {
-                        if (dxfEntity instanceof DXFInsert insert) {
-                            Point p = insert.getPoint();
-                            PointFromDXF pointFromDXF = new PointFromDXF(p.getX(), p.getY(), p.getZ(), "AA");
-                            if (layer.getName().equals(LAYER_WAYS)) pointFromDXF.setType(TYPE_OF_POINT_WAY);
-                            if (layer.getName().equals(LAYER_RACKS)) pointFromDXF.setType(TYPE_OF_POINT_RACK);
-                            allPoints.add(pointFromDXF);
-                        }
+                Object next = iterator.next();
+                if (next instanceof DXFLayer layer) {
+                    if (layer.getName().equals(LAYER_RACKS) || layer.getName().equals(LAYER_WAYS)) {
+                        layers.add(layer);
                     }
+                } else {
+                    throw new IllegalArgumentException("Unexpected type: " + next.getClass());
                 }
             }
-
-            List<PointFromDXF> pointFromDXFList = new ArrayList<>(allPoints.stream().toList());
-            pointFromDXFList.sort(Comparator.comparingDouble(PointFromDXF::getX));
-
-            int id = 0;
-            for (PointFromDXF pointFromDXF : pointFromDXFList) {
-                pointFromDXF.setId(id++);
-            }
-
-            List<PointFromDXF> fullPointsList = getListOfPoints(pointFromDXFList);
-
-            for (int i = 0; i < 3000; i++) {
-                System.out.println(fullPointsList.get(i).toString());
-            }
-//            for (PointFromDXF pointFromDXF : fullPointsList) {
-//                if (Math.round(pointFromDXF.getX()) == 95307 && Math.round(pointFromDXF.getY()) == 670629) {
-//                    System.out.println(pointFromDXF);
-//                }
-//                if (Math.round(pointFromDXF.getX()) == 95307 && Math.round(pointFromDXF.getY()) == 671969) {
-//                    System.out.println(pointFromDXF);
-//                }
-//            }
-//            System.out.println("First:" + pointFromDXFList.get(10534));
-
+            return getListPointsWithNeighbors(layers, nameIndex);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static List<PointFromDXF> getListOfPoints(List<PointFromDXF> pointFromDXFList) {
-        List<PointFromDXF> fullPointsList = new ArrayList<>();
-        for (PointFromDXF targetPoint : pointFromDXFList) {
-            for (PointFromDXF potentialNeighbor : pointFromDXFList) {
-                if (Math.abs(potentialNeighbor.getX() - targetPoint.getX()) < 1.0
-                        && !potentialNeighbor.equals(targetPoint)) {
-                    int differenceY = (int) Math.abs(Math.round(targetPoint.getY() - potentialNeighbor.getY()));
-                    NeighborPoint neighborPointY = checkDeferenceOnAxisY(differenceY, potentialNeighbor);
-                    if (Objects.nonNull(neighborPointY.getLengthForNeighbor())) {
-                        targetPoint.getNeighbors().add(neighborPointY);
-                    }
-                }
-                if (Math.abs(potentialNeighbor.getY() - targetPoint.getY()) < 1.0
-                        && !potentialNeighbor.equals(targetPoint)) {
-                    int differenceX = (int) Math.abs(Math.round(targetPoint.getX() - potentialNeighbor.getX()));
-                    NeighborPoint neighborPointX = checkDeferenceOnAxisX(differenceX, potentialNeighbor);
-                    if (Objects.nonNull(neighborPointX.getLengthForNeighbor())) {
-                        targetPoint.getNeighbors().add(neighborPointX);
+    private List<PointFromDXF> getListPointsWithNeighbors(List<DXFLayer> layers, String nameIndex) {
+        Comparator<PointFromDXF> comparator = Comparator.comparingDouble(PointFromDXF::getX).thenComparing(PointFromDXF::getY);
+        Set<PointFromDXF> points = new TreeSet<>(comparator);
+        int id = 0;
+        for (DXFLayer layer : layers) {
+            for (Object dxfEntity : layer.getDXFEntities(DXFConstants.ENTITY_TYPE_INSERT)) {
+                if (dxfEntity != null) {
+                    if (dxfEntity instanceof DXFInsert insert) {
+                        Point p = insert.getPoint();
+                        if (checkFilter(p)) {
+                            PointFromDXF pointFromDXF = new PointFromDXF(p.getX(), p.getY(), p.getZ(), nameIndex);
+                            pointFromDXF.setId(id++);
+                            if (layer.getName().equals(LAYER_WAYS)) pointFromDXF.setType(TYPE_OF_POINT_WAY);
+                            if (layer.getName().equals(LAYER_RACKS)) pointFromDXF.setType(TYPE_OF_POINT_RACK);
+                            points.add(pointFromDXF);
+                        }
                     }
                 }
             }
-            checkAfterAddingNeighbors(targetPoint);
-            fullPointsList.add(targetPoint);
         }
-        return fullPointsList;
+        setPointWithNeighbors(points.stream().toList(), AXIS_X_STEPS, AXIS_Y_STEPS);
+        return points.stream().toList();
     }
 
 
-    public static NeighborPoint checkDeferenceOnAxisX(int differenceX, PointFromDXF potentialNeighbor) {
-        NeighborPoint neighbor = new NeighborPoint(potentialNeighbor.getId());
-        switch (differenceX) {
-            case (AXIS_X_STEP_555):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_555);
-                break;
-
-            case (AXIS_X_STEP_660):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_660);
-                break;
-
-            case (AXIS_X_STEP_780):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_780);
-                break;
-
-            case (AXIS_X_STEP_1110):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_1110);
-                break;
-
-            case (AXIS_X_STEP_1440):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_1440);
-                break;
-
-            case (AXIS_X_STEP_1560):
-                neighbor.setLengthForNeighbor((double) AXIS_X_STEP_1560);
-                break;
+    private void setPointWithNeighbors(List<PointFromDXF> points, Map<Integer, Double> AXIS_X_STEPS, Map<Integer, Double> AXIS_Y_STEPS) {
+        NavigableMap<Integer, List<PointFromDXF>> bucketsByX = new TreeMap<>();
+        for (PointFromDXF point : points) {
+            int x = (int) Math.round(point.getX());
+            bucketsByX.computeIfAbsent(x, key -> new ArrayList<>()).add(point);
         }
-        return neighbor;
+
+        for (PointFromDXF point : points) {
+            int currentPointX = (int) Math.round(point.getX());
+            bucketsByX.subMap(currentPointX - 1560, true,
+                            currentPointX + 1560, true)
+                    .values().stream()
+                    .flatMap(Collection::stream)
+                    .filter(p -> !p.equals(point))
+                    .forEach(neighbor -> {
+                        int deferenceX = (int) Math.abs(Math.round(point.getX() - neighbor.getX()));
+                        int deferenceY = (int) Math.abs(Math.round(point.getY() - neighbor.getY()));
+                        if (deferenceX == 0) {
+                            if (deferenceY == 1340 && !neighbor.getType().equals(TYPE_OF_POINT_RACK)) {
+                                point.getNeighbors().add(new NeighborPoint(neighbor.getId(), 1340.0));
+                            } else {
+                                Optional.ofNullable(AXIS_Y_STEPS.get(deferenceY)).ifPresent(len -> point.getNeighbors()
+                                        .add(new NeighborPoint(neighbor.getId(), len)));
+                            }
+                        }
+                        if (deferenceY == 0) {
+                            Optional.ofNullable(AXIS_X_STEPS.get(deferenceX)).ifPresent(len -> point.getNeighbors()
+                                    .add(new NeighborPoint(neighbor.getId(), len)));
+                        }
+                    });
+            checkAfterAddingNeighbors(point);
+        }
     }
 
-    public static NeighborPoint checkDeferenceOnAxisY(int differenceY, PointFromDXF potentialNeighbor) {
-        NeighborPoint neighbor = new NeighborPoint(potentialNeighbor.getId());
-        switch (differenceY) {
-            case (AXIS_Y_STEP_990):
-                neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_990);
-                break;
-
-            case (AXIS_Y_STEP_1340):
-                if (!potentialNeighbor.getType().equals(TYPE_OF_POINT_RACK)) {
-                    neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_1340);
-                }
-                break;
-
-            case (AXIS_Y_STEP_1440):
-                neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_1440);
-                break;
-
-            case (AXIS_Y_STEP_1558):
-                neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_1558);
-                break;
-
-            case (AXIS_Y_STEP_1640):
-                neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_1640);
-                break;
-
-            case (AXIS_Y_STEP_1733):
-                neighbor.setLengthForNeighbor((double) AXIS_Y_STEP_1733);
-                break;
-        }
-        return neighbor;
-    }
-
-    public static void checkAfterAddingNeighbors(PointFromDXF point) {
-        boolean has780 = point.getNeighbors().stream()
-                .anyMatch(n -> Objects.equals((double) AXIS_X_STEP_780, n.getLengthForNeighbor()));
+    private void checkAfterAddingNeighbors(PointFromDXF point) {
+        boolean has780 = point.getNeighbors().stream().anyMatch(n -> Objects.equals(780.0, n.getLengthForNeighbor()));
+        boolean has1440 = point.getNeighbors().stream().anyMatch(n -> Objects.equals(1440.0, n.getLengthForNeighbor()));
         if (has780) {
-            point.getNeighbors().removeIf(n -> Objects.equals((double) AXIS_X_STEP_1560, n.getLengthForNeighbor()));
+            point.getNeighbors().removeIf(n -> Objects.equals(1560.0, n.getLengthForNeighbor()));
+            point.getNeighbors().removeIf(n -> Objects.equals(1400.0, n.getLengthForNeighbor()));
+        }
+        if (has1440) {
+            point.getNeighbors().removeIf(n -> Objects.equals(1560.0, n.getLengthForNeighbor()));
+        }
+    }
+
+    private boolean checkFilter(Point p) {
+        if (p.getX() >= FILTER_POINTS.getFirst().getX() && p.getY() >= FILTER_POINTS.getFirst().getY()) {
+            return p.getX() <= FILTER_POINTS.getLast().getX() && p.getY() <= FILTER_POINTS.getLast().getY();
+        } else {
+            return false;
         }
     }
 }

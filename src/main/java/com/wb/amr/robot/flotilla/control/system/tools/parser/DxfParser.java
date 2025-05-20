@@ -2,6 +2,7 @@ package com.wb.amr.robot.flotilla.control.system.tools.parser;
 
 import com.wb.amr.robot.flotilla.control.system.map.dxf.NeighborPoint;
 import com.wb.amr.robot.flotilla.control.system.map.dxf.PointFromDXF;
+import org.apache.catalina.filters.RemoteIpFilter;
 import org.kabeja.dxf.DXFConstants;
 import org.kabeja.dxf.DXFDocument;
 import org.kabeja.dxf.DXFInsert;
@@ -28,6 +29,15 @@ public class DxfParser {
     private final Map<Integer, Double> AXIS_Y_STEPS;
     private final String PATH;
 
+    /**
+     * @param wayLayer  Layer where robots will move.
+     * @param rackLayer Layer where rack be.
+     * @param x_steps   Steps on X axis.
+     * @param y_steps   Steps on Y axis.These steps create a grid of points.
+     * @param fromPoint It is min x, y.
+     * @param toPoint   It is max x, y. These points set restriction of grid by points, min x, y and max x, y.
+     * @Note This is parser get points from dxf file.
+     */
     public DxfParser(String wayLayer,
                      String rackLayer,
                      Map<Integer, Double> x_steps,
@@ -44,6 +54,17 @@ public class DxfParser {
         FILTER_POINTS.add(toPoint);
     }
 
+    /**
+     * @param nameIndex Every point have name, every name has try part {@code x + nameIndex + y},
+     *                  for correction work we have to put index, for example: {@code "AA"}.
+     *                  Map also can separate on a part, and for every part have to has index.
+     * @return {@code List<PointFromDXF>} It is Array of points from DXF file ready for transform into internal type for processing.
+     * @throws IOException              This exception throws because there is {@link InputStream}
+     * @throws IllegalArgumentException This exception throws because code has unchecked type conversion
+     *                                  <pre>
+     *                                                                                                                                                                                                                                            {@code Iterator<?> iterator = dxfDocument.getDXFLayerIterator();}
+     *                                                                                                                                                                                                                                        </pre>
+     */
     public List<PointFromDXF> getMap(String nameIndex) throws IOException, IllegalArgumentException {
         try (InputStream rawDxf = new ClassPathResource(PATH).getInputStream()) {
             Parser parser = ParserBuilder.createDefaultParser();
@@ -67,6 +88,15 @@ public class DxfParser {
         }
     }
 
+    /**
+     * This internal method for extract points from layers and set neighbors into every point.
+     * <p> Also used static parameters {@code LAYER_WAYS, LAYER_RACKS} and {@code TYPE_OF_POINT_WAY, TYPE_OF_POINT_RACK}.
+     * Where LAYER_ is static name of layer, TYPE_OF_ it is type of point, it set into point.</p>
+     *
+     * @param layers    It is list of layers were we have points.
+     * @param nameIndex It is index of naming for points.
+     * @return {@code List<PointFromDXF>} list of points with neighbors.
+     */
     private List<PointFromDXF> getListPointsWithNeighbors(List<DXFLayer> layers, String nameIndex) {
         Comparator<PointFromDXF> comparator = Comparator.comparingDouble(PointFromDXF::getX).thenComparing(PointFromDXF::getY);
         Set<PointFromDXF> points = new TreeSet<>(comparator);
@@ -91,7 +121,13 @@ public class DxfParser {
         return points.stream().toList();
     }
 
-
+    /**
+     * Internal method set neighbors into every point. Method filters points with stay close of target point and add in neighbors list.
+     *
+     * @param points       List of points without neighbors.
+     * @param AXIS_X_STEPS Steps for grid by axis X.
+     * @param AXIS_Y_STEPS Steps for grid by axis Y.
+     */
     private void setPointWithNeighbors(List<PointFromDXF> points, Map<Integer, Double> AXIS_X_STEPS, Map<Integer, Double> AXIS_Y_STEPS) {
         NavigableMap<Integer, List<PointFromDXF>> bucketsByX = new TreeMap<>();
         for (PointFromDXF point : points) {
@@ -126,6 +162,11 @@ public class DxfParser {
         }
     }
 
+    /**
+     * Point already has neighbors, but method {@code setPointWithNeighbors} has collision. It is filter witch cleans collision neighbors.
+     *
+     * @param point Point already has neighbors.
+     */
     private void checkAfterAddingNeighbors(PointFromDXF point) {
         boolean has780 = point.getNeighbors().stream().anyMatch(n -> Objects.equals(780.0, n.getLengthForNeighbor()));
         boolean has1440 = point.getNeighbors().stream().anyMatch(n -> Objects.equals(1440.0, n.getLengthForNeighbor()));
@@ -138,11 +179,39 @@ public class DxfParser {
         }
     }
 
+    /**
+     * Internal method with set restriction by axis x and y
+     *
+     * @param p - point, that checked for the occurrence of the coordinate range.
+     * @return true if point into range, else return false.
+     */
     private boolean checkFilter(Point p) {
         if (p.getX() >= FILTER_POINTS.getFirst().getX() && p.getY() >= FILTER_POINTS.getFirst().getY()) {
             return p.getX() <= FILTER_POINTS.getLast().getX() && p.getY() <= FILTER_POINTS.getLast().getY();
         } else {
             return false;
+        }
+    }
+
+    /**
+     *
+     * @param racks List of racks
+     */
+    public void setRackNumber(List<PointFromDXF> racks) {
+        NavigableMap<Integer, List<PointFromDXF>> bucket = new TreeMap<>();
+        for (PointFromDXF point : racks) {
+            int x = (int) Math.round(point.getX());
+            bucket.computeIfAbsent(x, key -> new ArrayList<>()).add(point);
+        }
+        int line = 1;
+        int number = 1;
+        for (List<PointFromDXF> listRacks : bucket.values()) {
+            String lineNumber = String.format("%03d", line++);
+            for (PointFromDXF point : listRacks) {
+                String sequenceNumber = String.format("%03d", number++);
+                point.setBusinessName(lineNumber + sequenceNumber);
+            }
+            number = 1;
         }
     }
 }

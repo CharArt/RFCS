@@ -18,8 +18,8 @@ public class PointFromDXF {
     private Double y;
     private Double z;
     private String type;
+    private String businessName;
     private Set<NeighborPoint> neighbors;
-
 
     public PointFromDXF(Double x, Double y, Double z, String indexMap) {
         DecimalFormat format = new DecimalFormat("#");

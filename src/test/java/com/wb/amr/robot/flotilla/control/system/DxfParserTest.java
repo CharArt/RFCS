@@ -2,10 +2,10 @@ package com.wb.amr.robot.flotilla.control.system;
 
 import com.wb.amr.robot.flotilla.control.system.map.dxf.PointFromDXF;
 import com.wb.amr.robot.flotilla.control.system.tools.parser.DxfParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kabeja.dxf.helpers.Point;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.util.List;
@@ -41,26 +41,30 @@ public class DxfParserTest {
         Point fromPoint = new Point(88647.5, 664380.4, 0.0);
         Point toPoint = new Point(173307.5, 747649.4, 0.0);
         String path = "dxf/R9-5.dxf";
-
         parser = new DxfParser(layer1, layer2, AXIS_X_STEPS, AXIS_Y_STEPS, fromPoint, toPoint, path);
     }
 
     @Test
     public void testDxfParser_withDXFMap() throws IOException {
         List<PointFromDXF> points = parser.getMap("AA");
-
-        for (int i = 0; i < 4424; i++) {
-            System.out.println(points.get(i).toString());
+        Assertions.assertNotNull(points);
+        Assertions.assertEquals(4424, points.size());
+        Assertions.assertEquals(2216, points.stream().filter(p -> p.getType().equals("rack")).toList().size());
+        for (PointFromDXF point : points) {
+            if (Math.round(point.getX()) == 96867 && Math.round(point.getY()) == 689969) {
+                Assertions.assertEquals(3, point.getNeighbors().size());
+                Assertions.assertTrue(point.getNeighbors().stream().noneMatch(n -> n.getLengthForNeighbor().equals(1560.0)));
+            }
         }
-//            for (PointFromDXF pointFromDXF : points) {
-//                if (Math.round(pointFromDXF.getX()) == 95307 && Math.round(pointFromDXF.getY()) == 670629) {
-//                    System.out.println(pointFromDXF);
-//                }
-//                if (Math.round(pointFromDXF.getX()) == 95307 && Math.round(pointFromDXF.getY()) == 671969) {
-//                    System.out.println(pointFromDXF);
-//                }
-//            }
-//        System.out.println("First:" + points.get(10534));
-//        System.out.println("Size: " + points.size());
+    }
+
+    @Test
+    public void testSetRackNumber_forListRack() throws IOException {
+        List<PointFromDXF> points = parser.getMap("AA");
+        List<PointFromDXF> racks = points.stream().filter(p -> p.getType().equals("rack")).toList();
+        parser.setRackNumber(racks);
+        for (PointFromDXF rack : racks) {
+            System.out.println(rack.getBusinessName());
+        }
     }
 }

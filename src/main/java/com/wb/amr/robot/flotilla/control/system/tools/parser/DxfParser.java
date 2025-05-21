@@ -2,7 +2,7 @@ package com.wb.amr.robot.flotilla.control.system.tools.parser;
 
 import com.wb.amr.robot.flotilla.control.system.map.dxf.NeighborPoint;
 import com.wb.amr.robot.flotilla.control.system.map.dxf.PointFromDXF;
-import org.apache.catalina.filters.RemoteIpFilter;
+
 import org.kabeja.dxf.DXFConstants;
 import org.kabeja.dxf.DXFDocument;
 import org.kabeja.dxf.DXFInsert;
@@ -11,6 +11,7 @@ import org.kabeja.dxf.helpers.Point;
 import org.kabeja.parser.ParseException;
 import org.kabeja.parser.Parser;
 import org.kabeja.parser.ParserBuilder;
+
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
@@ -62,8 +63,8 @@ public class DxfParser {
      * @throws IOException              This exception throws because there is {@link InputStream}
      * @throws IllegalArgumentException This exception throws because code has unchecked type conversion
      *                                  <pre>
-     *                                                                                                                                                                                                                                            {@code Iterator<?> iterator = dxfDocument.getDXFLayerIterator();}
-     *                                                                                                                                                                                                                                        </pre>
+     *                                                                                                                                                                                                                                                                             {@code Iterator<?> iterator = dxfDocument.getDXFLayerIterator();}
+     *                                                                                                                                                                                                                                                                         </pre>
      */
     public List<PointFromDXF> getMap(String nameIndex) throws IOException, IllegalArgumentException {
         try (InputStream rawDxf = new ClassPathResource(PATH).getInputStream()) {
@@ -108,7 +109,7 @@ public class DxfParser {
                         Point p = insert.getPoint();
                         if (checkFilter(p)) {
                             PointFromDXF pointFromDXF = new PointFromDXF(p.getX(), p.getY(), p.getZ(), nameIndex);
-                            pointFromDXF.setId(id++);
+                            pointFromDXF.setId((long) id++);
                             if (layer.getName().equals(LAYER_WAYS)) pointFromDXF.setType(TYPE_OF_POINT_WAY);
                             if (layer.getName().equals(LAYER_RACKS)) pointFromDXF.setType(TYPE_OF_POINT_RACK);
                             points.add(pointFromDXF);
@@ -172,7 +173,7 @@ public class DxfParser {
         boolean has1440 = point.getNeighbors().stream().anyMatch(n -> Objects.equals(1440.0, n.getLengthForNeighbor()));
         if (has780) {
             point.getNeighbors().removeIf(n -> Objects.equals(1560.0, n.getLengthForNeighbor()));
-            point.getNeighbors().removeIf(n -> Objects.equals(1400.0, n.getLengthForNeighbor()));
+            point.getNeighbors().removeIf(n -> Objects.equals(1440.0, n.getLengthForNeighbor()));
         }
         if (has1440) {
             point.getNeighbors().removeIf(n -> Objects.equals(1560.0, n.getLengthForNeighbor()));
@@ -194,7 +195,6 @@ public class DxfParser {
     }
 
     /**
-     *
      * @param racks List of racks
      */
     public void setRackNumber(List<PointFromDXF> racks) {

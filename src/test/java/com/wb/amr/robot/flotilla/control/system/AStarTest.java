@@ -20,31 +20,31 @@ public class AStarTest {
 
     @Test
     public void shoud_FindShorWay_WhenGetValidMap() {
-        Node A = new Node("A", "1", 0.0, 0.0);
-        Node B = new Node("B", "2", 1.0, 2.0);
-        Node C = new Node("C", "3", 3.0, 1.0);
-        Node D = new Node("D", "4", 4.0, 3.0);
-        Node E = new Node("E", "5", 5.0, 5.0);
+        Node nodeA = new Node("nodeA", 1L, 0.0, 0.0);
+        Node nodeB = new Node("nodeB", 2L, 1.0, 2.0);
+        Node nodeC = new Node("nodeC", 3L, 3.0, 1.0);
+        Node nodeD = new Node("nodeD", 4L, 4.0, 3.0);
+        Node nodeE = new Node("nodeE", 5L, 5.0, 5.0);
 
-        A.addNeighbor(C, new Edge(A, C));
-        A.addNeighbor(B, new Edge(A, B));
+        nodeA.addNeighbor(nodeC, new Edge(nodeA, nodeC));
+        nodeA.addNeighbor(nodeB, new Edge(nodeA, nodeB));
 
-        B.addNeighbor(A, new Edge(B, A));
-        B.addNeighbor(C, new Edge(B, C));
-        B.addNeighbor(E, new Edge(B, E));
+        nodeB.addNeighbor(nodeA, new Edge(nodeB, nodeA));
+        nodeB.addNeighbor(nodeC, new Edge(nodeB, nodeC));
+        nodeB.addNeighbor(nodeE, new Edge(nodeB, nodeE));
 
-        C.addNeighbor(A, new Edge(C, A));
-        C.addNeighbor(B, new Edge(C, B));
-        C.addNeighbor(D, new Edge(C, D));
+        nodeC.addNeighbor(nodeA, new Edge(nodeC, nodeA));
+        nodeC.addNeighbor(nodeB, new Edge(nodeC, nodeB));
+        nodeC.addNeighbor(nodeD, new Edge(nodeC, nodeD));
 
-        D.addNeighbor(E, new Edge(D, E));
-        D.addNeighbor(C, new Edge(D, C));
+        nodeD.addNeighbor(nodeE, new Edge(nodeD, nodeE));
+        nodeD.addNeighbor(nodeC, new Edge(nodeD, nodeC));
 
-        E.addNeighbor(D, new Edge(E, D));
-        E.addNeighbor(B, new Edge(E, B));
+        nodeE.addNeighbor(nodeD, new Edge(nodeE, nodeD));
+        nodeE.addNeighbor(nodeB, new Edge(nodeE, nodeB));
 
         AStarSearch aStart = new AStarSearch();
-        PathResult pathResult = aStart.findPath(A, E);
+        PathResult pathResult = aStart.findPath(nodeA, nodeE);
         Assertions.assertEquals(3, pathResult.getNodes().size());
         Assertions.assertEquals(2, pathResult.getEdges().size());
         Assertions.assertEquals(5, pathResult.getPath().size());

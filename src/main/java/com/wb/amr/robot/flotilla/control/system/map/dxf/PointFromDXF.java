@@ -12,7 +12,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = false)
 public class PointFromDXF {
 
-    private long id;
+    private Long id;
     private String name;
     private Double x;
     private Double y;

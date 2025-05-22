@@ -5,29 +5,32 @@ import com.wb.amr.robot.flotilla.control.system.map.dxf.PointFromDXF;
 
 import java.util.*;
 
-public class ConverterFromDxfPointToAStartNode {
+public class WorkMap {
 
     private List<PointFromDXF> points;
+    private List<Node> nodes;
+    private List<Node> racks;
+    private List<Edge> edges;
+    private NavigableMap<Integer, List<Node>> graph;
 
-    public ConverterFromDxfPointToAStartNode(List<PointFromDXF> points) {
+    public WorkMap(List<PointFromDXF> points) {
         this.points = points;
     }
 
     public NavigableMap<Integer, List<Node>> getMap() throws IllegalArgumentException {
-        NavigableMap<Integer, List<Node>> graph = new TreeMap<>();
         List<Node> nodes = new ArrayList<>();
         if (Objects.nonNull(this.points)) {
 
             points.forEach(point -> {
                 Node node = getNode(point);
-                node.setNeighbors(setNeighbors(point));
                 nodes.add(node);
             });
 
-            for (Node node : nodes) {
+            nodes.forEach(node -> {
                 int x = (int) Math.round(node.getX());
-                graph.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
-            }
+                this.graph.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
+            });
+            setNeighbors();
 
             return graph;
         } else {
@@ -46,21 +49,18 @@ public class ConverterFromDxfPointToAStartNode {
         }
     }
 
-    private Map<Node, Edge> setNeighbors(PointFromDXF point) {
+    private void setNeighbors() {
         Map<Node, Edge> neighbors = new HashMap<>();
-        if (Objects.nonNull(point)) {
-            List<NeighborPoint> neighborPoints = point.getNeighbors().stream().toList();
-            Node startNode = getNode(point);
-            for (NeighborPoint np : neighborPoints) {
-                PointFromDXF pointFromDXF = points.stream()
-                        .filter(pt -> np.getPointId().equals(pt.getId())).findFirst().orElseThrow();
-                Node endNode = getNode(pointFromDXF);
-                Edge edge = new Edge(startNode, endNode);
-                neighbors.put(endNode, edge);
+        if (!this.nodes.isEmpty()) {
+            for (Node startNode : this.nodes) {
+                PointFromDXF pointDxf = points.stream()
+                        .filter(point -> startNode.getId().equals(point.getId()))
+                        .findFirst().orElseThrow();
+
+                for (NeighborPoint neighborPoint : pointDxf.getNeighbors()) {
+
+                }
             }
-            return neighbors;
-        } else {
-            throw new IllegalArgumentException("Points couldn't be empty");
         }
     }
 }

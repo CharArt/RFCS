@@ -14,7 +14,7 @@ public class Edge implements Comparable<Edge> {
     private final Double length;
 
     public Edge(Node star, Node end) {
-        this.id = star.getName() + end.getName();
+        this.id = "X: " + star.getId() + "/ Y: " + end.getName();
         this.star = star;
         this.end = end;
         this.length = Math.sqrt(Math.pow(Math.abs(star.getX() - end.getX()), 2.0) + Math.pow(Math.abs(star.getY() - end.getY()), 2.0));

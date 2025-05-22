@@ -9,15 +9,15 @@ public class AStarSearch {
         Map<Node, Edge> edgeFrom = new HashMap<>();
         Map<Node, Double> gScore = new HashMap<>();
         Map<Node, Double> fScore = new HashMap<>();
-        PriorityQueue<Node> queueForTreatment = new PriorityQueue<>(Comparator.comparingDouble(node -> fScore.getOrDefault(node, Double.MAX_VALUE)));
+        PriorityQueue<Node> queueForProcessing = new PriorityQueue<>(Comparator.comparingDouble(node -> fScore.getOrDefault(node, Double.MAX_VALUE)));
 
         gScore.put(start, 0.0);
         double euclideanHeuristicScore = this.euclideanHeuristic(start, goal);
         fScore.put(start, euclideanHeuristicScore);
-        queueForTreatment.add(start);
+        queueForProcessing.add(start);
 
-        while (!queueForTreatment.isEmpty()) {
-            Node currentNode = queueForTreatment.poll();
+        while (!queueForProcessing.isEmpty()) {
+            Node currentNode = queueForProcessing.poll();
 
             if (currentNode == goal)
                 return reconstructPath(nodeFrom, edgeFrom, currentNode);
@@ -34,11 +34,11 @@ public class AStarSearch {
                     double eh = euclideanHeuristic(neighborNode, goal);
                     double score = weightToNeighbor + eh;
                     fScore.put(neighborNode, score);
-                    if (!queueForTreatment.contains(neighborNode)) {
-                        queueForTreatment.add(neighborNode);
+                    if (!queueForProcessing.contains(neighborNode)) {
+                        queueForProcessing.add(neighborNode);
                     }
                 }
-            }   
+            }
         }
         return new PathResult(Collections.emptyList(), Collections.emptyList());
     }

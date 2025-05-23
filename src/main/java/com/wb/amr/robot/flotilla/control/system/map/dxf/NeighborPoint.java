@@ -10,10 +10,14 @@ import java.util.Objects;
 public class NeighborPoint {
     private Long pointId;
     private Double lengthForNeighbor;
+    private Double x;
+    private Double y;
 
-    public NeighborPoint(Long pointId, Double lengthForNeighbor) {
+    public NeighborPoint(Long pointId, Double lengthForNeighbor, Double x, Double y) {
         this.pointId = pointId;
         this.lengthForNeighbor = lengthForNeighbor;
+        this.x = x;
+        this.y = y;
     }
 
     public NeighborPoint(Long pointId) {
@@ -22,7 +26,6 @@ public class NeighborPoint {
 
     public NeighborPoint() {
     }
-
 
     @Override
     public boolean equals(Object obj) {

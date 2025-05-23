@@ -51,7 +51,7 @@ public class PointFromDXF {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        DecimalFormat format = new DecimalFormat("#.#");
+        DecimalFormat format = new DecimalFormat("#");
         builder.append(name + " Point id:" + id + " {x = " + format.format(this.x) + ", y = " + format.format(this.y) + "} "
                 + "type: " + this.type + ", Neighbors:" + neighbors);
         return builder.toString();

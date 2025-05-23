@@ -63,8 +63,8 @@ public class DxfParser {
      * @throws IOException              This exception throws because there is {@link InputStream}
      * @throws IllegalArgumentException This exception throws because code has unchecked type conversion
      *                                  <pre>
-     *                                                                                                                                                                                                                                                                             {@code Iterator<?> iterator = dxfDocument.getDXFLayerIterator();}
-     *                                                                                                                                                                                                                                                                         </pre>
+     *                                                                                                                                                                                                                                                                                                                                                                                                                                                  {@code Iterator<?> iterator = dxfDocument.getDXFLayerIterator();}
+     *                                                                                                                                                                                                                                                                                                                                                                                                                                              </pre>
      */
     public List<PointFromDXF> getMap(String nameIndex) throws IOException, IllegalArgumentException {
         try (InputStream rawDxf = new ClassPathResource(PATH).getInputStream()) {
@@ -129,7 +129,9 @@ public class DxfParser {
      * @param AXIS_X_STEPS Steps for grid by axis X.
      * @param AXIS_Y_STEPS Steps for grid by axis Y.
      */
-    private void setPointWithNeighbors(List<PointFromDXF> points, Map<Integer, Double> AXIS_X_STEPS, Map<Integer, Double> AXIS_Y_STEPS) {
+    private void setPointWithNeighbors(List<PointFromDXF> points,
+                                       Map<Integer, Double> AXIS_X_STEPS,
+                                       Map<Integer, Double> AXIS_Y_STEPS) {
         NavigableMap<Integer, List<PointFromDXF>> bucketsByX = new TreeMap<>();
         for (PointFromDXF point : points) {
             int x = (int) Math.round(point.getX());
@@ -148,15 +150,25 @@ public class DxfParser {
                         int deferenceY = (int) Math.abs(Math.round(point.getY() - neighbor.getY()));
                         if (deferenceX == 0) {
                             if (deferenceY == 1340 && !neighbor.getType().equals(TYPE_OF_POINT_RACK)) {
-                                point.getNeighbors().add(new NeighborPoint(neighbor.getId(), 1340.0));
+                                point.getNeighbors()
+                                        .add(new NeighborPoint(neighbor.getId(),
+                                                1340.0, neighbor.getX(),
+                                                neighbor.getY()));
                             } else {
-                                Optional.ofNullable(AXIS_Y_STEPS.get(deferenceY)).ifPresent(len -> point.getNeighbors()
-                                        .add(new NeighborPoint(neighbor.getId(), len)));
+                                Optional.ofNullable(AXIS_Y_STEPS.get(deferenceY))
+                                        .ifPresent(len -> point.getNeighbors()
+                                                .add(new NeighborPoint(neighbor.getId(),
+                                                        len,
+                                                        neighbor.getX(),
+                                                        neighbor.getY())));
                             }
                         }
                         if (deferenceY == 0) {
                             Optional.ofNullable(AXIS_X_STEPS.get(deferenceX)).ifPresent(len -> point.getNeighbors()
-                                    .add(new NeighborPoint(neighbor.getId(), len)));
+                                    .add(new NeighborPoint(neighbor.getId(),
+                                            len,
+                                            neighbor.getX(),
+                                            neighbor.getY())));
                         }
                     });
             checkAfterAddingNeighbors(point);

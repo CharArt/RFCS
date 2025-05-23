@@ -2,40 +2,45 @@ package com.wb.amr.robot.flotilla.control.system.tools.astar;
 
 import com.wb.amr.robot.flotilla.control.system.map.dxf.NeighborPoint;
 import com.wb.amr.robot.flotilla.control.system.map.dxf.PointFromDXF;
+import lombok.Getter;
 
 import java.util.*;
 
 public class WorkMap {
 
-    private List<PointFromDXF> points;
-    private List<Node> nodes;
-    private List<Node> racks;
-    private List<Edge> edges;
-    private NavigableMap<Integer, List<Node>> graph;
+    private final List<PointFromDXF> points;
+    private final List<Node> nodes;
+    @Getter
+    private final NavigableMap<Integer, List<Node>> graph;
+    @Getter
+    private final NavigableMap<Integer, List<Node>> rack;
+    @Getter
+    private final NavigableMap<Integer, List<Node>> way;
 
-    public WorkMap(List<PointFromDXF> points) {
+    public WorkMap(List<PointFromDXF> points) throws IllegalArgumentException {
         this.points = points;
-    }
+        this.nodes = new ArrayList<>(points.size());
+        this.graph = new TreeMap<>();
+        this.rack = new TreeMap<>();
+        this.way = new TreeMap<>();
 
-    public NavigableMap<Integer, List<Node>> getMap() throws IllegalArgumentException {
-        List<Node> nodes = new ArrayList<>();
-        if (Objects.nonNull(this.points)) {
+        points.forEach(point -> {
+            Node node = getNode(point);
+            nodes.add(node);
+        });
 
-            points.forEach(point -> {
-                Node node = getNode(point);
-                nodes.add(node);
-            });
+        nodes.forEach(node -> {
+            int x = (int) Math.round(node.getX());
+            this.graph.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
 
-            nodes.forEach(node -> {
-                int x = (int) Math.round(node.getX());
-                this.graph.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
-            });
-            setNeighbors();
+            if (node.getType().equals("rack"))
+                this.rack.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
 
-            return graph;
-        } else {
-            throw new IllegalArgumentException("List of points couldn't be empty");
-        }
+            if (node.getType().equals("way"))
+                this.way.computeIfAbsent(x, key -> new ArrayList<>()).add(node);
+        });
+        setNeighbors();
+
     }
 
     private Node getNode(PointFromDXF point) throws IllegalArgumentException {
@@ -58,7 +63,12 @@ public class WorkMap {
                         .findFirst().orElseThrow();
 
                 for (NeighborPoint neighborPoint : pointDxf.getNeighbors()) {
+                    Node neighborNode = this.graph.get((int) Math.round(neighborPoint.getX())).stream()
+                            .filter(n -> n.getY().equals(neighborPoint.getY()))
+                            .findFirst().orElseThrow();
 
+                    Edge edge = new Edge(startNode, neighborNode);
+                    startNode.addNeighbor(neighborNode, edge);
                 }
             }
         }

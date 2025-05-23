@@ -49,11 +49,13 @@ public class DxfParserTest {
         List<PointFromDXF> points = parser.getMap("AA");
         Assertions.assertNotNull(points);
         Assertions.assertEquals(4424, points.size());
-        Assertions.assertEquals(2216, points.stream().filter(p -> p.getType().equals("rack")).toList().size());
+        Assertions.assertEquals(2216, points.stream()
+                .filter(p -> p.getType().equals("rack")).toList().size());
         for (PointFromDXF point : points) {
             if (Math.round(point.getX()) == 96867 && Math.round(point.getY()) == 689969) {
                 Assertions.assertEquals(3, point.getNeighbors().size());
-                Assertions.assertTrue(point.getNeighbors().stream().noneMatch(n -> n.getLengthForNeighbor().equals(1560.0)));
+                Assertions.assertTrue(point.getNeighbors()
+                        .stream().noneMatch(n -> n.getLengthForNeighbor().equals(1560.0)));
             }
         }
     }
@@ -61,7 +63,8 @@ public class DxfParserTest {
     @Test
     public void testSetRackNumber_forListRack() throws IOException {
         List<PointFromDXF> points = parser.getMap("AA");
-        List<PointFromDXF> racks = points.stream().filter(p -> p.getType().equals("rack")).toList();
+        List<PointFromDXF> racks = points.stream()
+                .filter(p -> p.getType().equals("rack")).toList();
         parser.setRackNumber(racks);
         for (PointFromDXF rack : racks) {
             System.out.println(rack.getBusinessName());

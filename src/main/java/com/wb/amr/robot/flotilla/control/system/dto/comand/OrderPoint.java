@@ -3,7 +3,6 @@ package com.wb.amr.robot.flotilla.control.system.dto.comand;
 import com.wb.amr.robot.flotilla.control.system.tools.astar.Node;
 import lombok.Getter;
 
-import javax.print.attribute.standard.JobKOctets;
 import java.util.Collection;
 import java.util.List;
 import java.util.NavigableMap;
@@ -45,7 +44,6 @@ public class OrderPoint {
         this.name = x.toString() + index + y.toString();
     }
 
-
     public Node getNode(NavigableMap<Integer, List<Node>> map) throws IllegalArgumentException {
         if (Objects.nonNull(this.x) && Objects.nonNull(this.y)) {
             return map.get(x).stream()
@@ -70,5 +68,3 @@ public class OrderPoint {
                 '}';
     }
 }
-
-

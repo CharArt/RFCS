@@ -7,6 +7,7 @@ import com.wb.amr.robot.flotilla.control.system.tools.astar.WorkMap;
 import com.wb.amr.robot.flotilla.control.system.tools.astar.Node;
 import com.wb.amr.robot.flotilla.control.system.tools.astar.PathResult;
 import com.wb.amr.robot.flotilla.control.system.tools.parser.DxfParser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.kabeja.dxf.helpers.Point;
@@ -15,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NavigableMap;
 
-public class ConverterDxfOrderPointToAStartNodeTest {
+public class WorkMapTest {
     private DxfParser parser;
 
     @BeforeEach
@@ -48,10 +49,10 @@ public class ConverterDxfOrderPointToAStartNodeTest {
     }
 
     @Test
-    public void converterWithValidMap() throws IOException {
+    public void getMapTest() throws IOException {
         List<PointFromDXF> points = parser.getMap("AA");
-        WorkMap converter = new WorkMap(points);
-        NavigableMap<Integer, List<Node>> map = converter.getMap();
+        WorkMap workMap = new WorkMap(points);
+        NavigableMap<Integer, List<Node>> map = workMap.getGraph();
 
         OrderPoint startPoint = new OrderPoint("90087AA686649");
         OrderPoint endPoint = new OrderPoint("90867AA665780");
@@ -60,12 +61,8 @@ public class ConverterDxfOrderPointToAStartNodeTest {
 
         AStarSearch aStart = new AStarSearch();
         PathResult path = aStart.findPath(startNode, endNode);
-
-        System.out.println(path.getNodes().size());
-        System.out.println(path.getEdges().size());
-
-        for (Node node : path.getNodes()) {
-            System.out.println(node.toString());
-        }
+        Assertions.assertEquals(18, path.getNodes().size());
+        Assertions.assertEquals(17, path.getEdges().size());
+        Assertions.assertEquals(35, path.getPath().size());
     }
 }
